@@ -54,7 +54,6 @@ class B_DatabaseIntegrityConstraintTest extends TestCase
      */
     public function testGroupUserDatabaseThrowsIntegrityConstraintExceptionOnDuplicateEntry() 
     {
-        $this->seed();
         $this->expectException("Illuminate\Database\QueryException");
         $this->expectExceptionCode(23000);
         $user = User::first();
