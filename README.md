@@ -1,71 +1,35 @@
-# Instabook : partage de photos avec des groupes d'ami. 
+﻿
+ - Démarche adoptée pour la réalisation du projet :
 
-## Contexte
-L'objectif de cette application est de pouvoir créer des groupes d'amis, poster des photos accessibles par le groupe. 
-Pour chaque photo, on peut "tagger" les membres du groupe qui y apparaissent. Chaque photo peut-être commentée par un membre du groupe, et chaque membre du groupe peut répondre à un commentaire. 
+ Etape 1 : installation du dépôt en local et création du repository git en suivant le tutoriel proposé
 
-## Étape de réalisation 
+ Etape 2 : création des fichiers de migration nécessaires au remplissage de la base de données
 
-L'objectif est de concevoir les fichiers de migrations, les factories nécessaires aux tests, les modèles Eloquent et les relations entre les modèles. 
+ Etape 3 : remplissage de ces fichiers de migration (colonnes nécessaires et clés étrangères en se référant au mcd)
 
-Ce projet pourra être étendu par la suite. 
+ Etape 4 : ordonancement des fichiers de migration (tables sans clés étrangères, puis avec clés étrangères et enfin tables pivots)
 
-### Récupération du projet et préparation de votre dépôt pour le rendu 
+ Etape 5 : création des fichiers models nécessaires à la mise en relation des tables de la base de données
 
-1. Cloner le dépôt 
-2. Rentrez dans le dépot : `cd instabook`
-3. "Dégiter" le dépôt : `rm -rf .git`
-4. Initialiser git : `git init`
-5. Créez votre dépôt de rendu sur git, sans README, ni aucune autre case cochée
-6. Suivez les instructions indiquées sur git (`git add .`, `git commit -m"initial commit`, `git remote add origin url_de_votre_depot`)
-7. Vous pouvez (mais n'êtes pas obligé) rajouter comme second dépôt distant le dépôt actuel : `git remote add prof )
-8. Faites votre premier push : `git push -u  origin master`. 
+ Etape 6 : remplissage de ces fichiers models (toujours en se référençant au mcd en respectant les relations entres les tables)
 
-### Création d'une base de données, 
-
-Vous aurez à créer une base de données dans MySQL : 
-`sudo mysql`
-Une fois dans mysql 
-
-```sql 
-CREATE DATABASE instabook;
- -- CREATE USER  laravel@localhost IDENTIFIED BY 'L4R4V3l' ; --  À faire si vous n'avez pas déjà un utilisateur autre que root
- -- On donne les droit à l'utilisateur
- GRANT ALL ON instabook.* TO laravel@localhost; 
-```
-
-Copier le fichier `.env.example` en `.env` : 
-```sh 
-cp .env.example .env
-```
-Et remplissez les informations propres à la BDD. 
+ Etape 7 : passage des tests unitaires vérifiant la bonne mise en place des fichiers de migration et des models
 
 
-Installer le projet à l'aide de composer : 
-```sh
-composer install
-```
+ - Difficultés rencontrées :
 
-Créer une clé pour le .env
-```sh
-php artisan key:generate
-```
+ Difficulté 1 : passage du premier fichier de tests à cause du php artisan tinker, réalisé sans respect des relations
 
-À vous de jouer !!!
+ Difficulté 2 : relations de la table Comment à cause de la relation sur elle-même
+
+ Difficulté 3 : passage du dernier fichier de tests concernant les règles de gestion des commentaires et des photos (problème rencontré concernant les tests 1, 3 et 5 --> ne pas créer si...)
 
 
-### Les jeux de tests
-Afin de faciliter le développement, les jeux de tests sont numérotés pour être passé par étapes. Un `seeder` a été fourni pour remplir la base de donnée avec un jeu de donnée valide. pour que celui ci s'execute bien, vous aurez besoin des factories (fournies), ainsi que des modèles. 
-Vous aurez aussi besoin d'avoir créé les modèles et vérifié que chacun à bien le trait hasFactory (`use hasFactory;`).
-Le modèle Photo est fourni avec une relation nécessaire pour le remplissage de la base. 
+ - Solutions mises en place :
 
+ Solution 1 : envoi de mail au prof (vous-même qui lisez ce README.md), afin de réinitialiser le seeder avec : php artisan migrate:fresh --seed
 
-Ainsi la première étape concernent simplement la structure de la base données, sans prendre en compte les contraintes de clés étrangères, ni d'unicité. Il y a besoin des fichiers de migration, ainsi que des factory qui sont fournies pour cette étape. 
+ Solution 2 : aller voir la doc concernant les relations "BelongsTo" et les options que l'on y met ('foreign_key', 'owner_key')
 
-
-Ensuite, il est nécessaire de coder les relations dans les modèles, pour pouvoir tester les contraintes d'unicité et de clés étrangères, dans leur forme simplifiées, c’est-à-dire sans relations complexes. 
-
-Enfin, il faudra intégrer certaines règles de gestions, telles que l'appartenance à groupe d'une photo pour être mentionné comme apparaissant sur la photo. 
-  - Un commentaire ne peut être que fait que par un utilisateur qui appartient au même groupe que la photo
-  - La photo n'est créée que si son propriétaire appartient bien au même groupe que la photo
-  - Un utilisateur ne peut être ajouté à une photo que si il est dans le même groupe que la photo
+ Solution 3 : demande d'aide auprès du prof + jeter un coup d'oeil sur le test déjà passé sur l'ancien projet + remplir la table pivot "PhotoUser" des méthodes photo et user car sans elles,
+              on ne peut pas récupérer le group correspondant à la photo et de ce fait, la méthode "booted" ne fonctionne pas.
